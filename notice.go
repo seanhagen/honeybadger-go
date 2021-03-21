@@ -2,11 +2,13 @@ package honeybadger
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"os"
 	"regexp"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gofrs/uuid/v3"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
@@ -52,8 +54,8 @@ func (n *Notice) asJSON() *hash {
 	return &hash{
 		"api_key": n.APIKey,
 		"notifier": &hash{
-			"name":    "honeybadger",
-			"url":     "https://github.com/honeybadger-io/honeybadger-go",
+			"name":    "honeybadger-go-ctx",
+			"url":     "https://github.com/seanhagen/honeybadger-go",
 			"version": VERSION,
 		},
 		"error": &hash{
@@ -129,6 +131,12 @@ func composeStack(stack []*Frame, root string) (frames []*Frame) {
 	re, err := regexp.Compile("^" + regexp.QuoteMeta(root))
 	if err != nil {
 		return stack
+	}
+
+	if len(stack) > 0 {
+		frame := stack[0]
+		fmt.Printf("%v -> [PROJECT_ROOT]\n", frame.File)
+		spew.Dump(frame)
 	}
 
 	for _, frame := range stack {

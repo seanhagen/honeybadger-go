@@ -22,6 +22,7 @@ type Error struct {
 	Message string
 	Class   string
 	Stack   []*Frame
+	Notice  *Notice
 }
 
 func (e Error) Error() string {

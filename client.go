@@ -87,6 +87,7 @@ func (client *Client) Notify(ctx context.Context, err interface{}, extra ...inte
 			return "", err
 		}
 	}
+
 	workerErr := client.worker.Push(func() error {
 		if err := client.Config.Backend.Notify(Notices, notice); err != nil {
 			return err

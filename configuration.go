@@ -1,6 +1,7 @@
 package honeybadger
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -15,14 +16,14 @@ type Logger interface {
 
 // Configuration manages the configuration for the client.
 type Configuration struct {
-	APIKey          string
-	Root            string
-	Env             string
-	Hostname        string
-	Endpoint        string
-	Timeout         time.Duration
-	Logger          Logger
-	Backend         Backend
+	APIKey   string
+	Root     string
+	Env      string
+	Hostname string
+	Endpoint string
+	Timeout  time.Duration
+	Logger   Logger
+	Backend  Backend
 }
 
 func (c1 *Configuration) update(c2 *Configuration) *Configuration {
@@ -55,15 +56,17 @@ func (c1 *Configuration) update(c2 *Configuration) *Configuration {
 
 func newConfig(c Configuration) *Configuration {
 	config := &Configuration{
-		APIKey:          getEnv("HONEYBADGER_API_KEY"),
-		Root:            getPWD(),
-		Env:             getEnv("HONEYBADGER_ENV"),
-		Hostname:        getHostname(),
-		Endpoint:        getEnv("HONEYBADGER_ENDPOINT", "https://api.honeybadger.io"),
-		Timeout:         getTimeout(),
-		Logger:          log.New(os.Stderr, "[honeybadger] ", log.Flags()),
+		APIKey:   getEnv("HONEYBADGER_API_KEY"),
+		Root:     getPWD(),
+		Env:      getEnv("HONEYBADGER_ENV"),
+		Hostname: getHostname(),
+		Endpoint: getEnv("HONEYBADGER_ENDPOINT", "https://api.honeybadger.io"),
+		Timeout:  getTimeout(),
+		Logger:   log.New(os.Stderr, "[honeybadger] ", log.Flags()),
 	}
 	config.update(&c)
+
+	fmt.Printf("honeybadger config, root is: %v\n", config.Root)
 
 	if config.Backend == nil {
 		config.Backend = newServerBackend(config)
